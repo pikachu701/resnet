@@ -43,7 +43,7 @@ decoder = nn.Sequential(
 # 组合特征提取部分和解码部分
 model_new = nn.Sequential(
     pretrained_resnet50_new,
-    decoder
+    decoder        
 )
 #---------------------------------------------------------------------------------------------
 
@@ -166,6 +166,7 @@ for i in range(400):
     plt.savefig(image_save_path)
     plt.close(fig)
 
-print(f"400 张对比图片已保存到 {save_folder} 文件夹中。")
+print(f"400 张对比图片已保存到 {save_folder} 文件夹中。")  #?is that right?
+
 
 
