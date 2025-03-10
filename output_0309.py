@@ -12,6 +12,7 @@ import os
 # from train_resnet0306 import *
 import train_resnet0306
 import matplotlib.pyplot as plt  # 添加此行
+import scipy.io as sio
 
 # ---------------------------------------------------模型加载------------------------------------
 pretrained_resnet50 = models.resnet50(pretrained=True)
@@ -43,7 +44,7 @@ decoder = nn.Sequential(
 # 组合特征提取部分和解码部分
 model_new = nn.Sequential(
     pretrained_resnet50_new,
-    decoder        
+    decoder
 )
 #---------------------------------------------------------------------------------------------
 
@@ -127,18 +128,21 @@ with torch.no_grad():
 
 # 将输出转换为numpy数组
 outputs_np = outputs.cpu().numpy()
+outputs_np = np.squeeze(outputs_np)   #原格式400*1*224*224, 变成400*224*224
+# outputs_np = np.transpose(outputs_np, (1, 2, 0))  # 变成224*224*400, 方便matlab 读取
+
 test_images_np = test_images.cpu().numpy()
 test_ground_truth_np = test_ground_truth.cpu().numpy()
 
 # 指定保存文件夹
-save_folder = 'test_output'
+save_folder = 'SOS_RESNET/test_output'
 if not os.path.exists(save_folder):
     os.makedirs(save_folder)
 
 # 保存为.mat文件
 save_path = os.path.join(save_folder, 'test_output.mat')
-with h5py.File(save_path, 'w') as f:
-    f.create_dataset('output_images', data=outputs_np)
+sio.savemat(save_path, {'output_images': outputs_np})
+# sio.savemat(save_path,'output_images':output_np)
 
 print(f"测试集输出已保存到 {save_path}")
 
@@ -166,7 +170,6 @@ for i in range(400):
     plt.savefig(image_save_path)
     plt.close(fig)
 
-print(f"400 张对比图片已保存到 {save_folder} 文件夹中。")  #?is that right?
-
+print(f"400 张对比图片已保存到 {save_folder} 文件夹中。")
 
 
