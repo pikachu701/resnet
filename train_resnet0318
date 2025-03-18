@@ -260,15 +260,10 @@ if __name__ == '__main__':
             min_valid_loss = valid_loss
             best_epoch = epoch + 1  # 记录最佳epoch（从1开始计数）
             best_valid_loss = valid_loss  # 记录最佳验证损失
-            # torch.save(model.state_dict(), os.path.join(model_dir, "step2_best_model.pth"))
-            # 如果你想保存更多信息，也可以使用下面的代码
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'loss': valid_loss
-            }, os.path.join(model_dir, "step2_best_model.pth"))
+            torch.save(model.state_dict(), os.path.join(model_dir, "step2_best_model.pth"))
+           
             torch.cuda.empty_cache()
+          
 
     print("执行时间：", time.time() - start_time, "秒")
     print(f"最佳模型出现在第 {best_epoch} 轮，验证损失为 {best_valid_loss:.4f}")
