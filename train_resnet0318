@@ -1,3 +1,4 @@
+# 在采用mse损失函数时，loss47最佳模型出现在第 475 轮，验证损失为 0.0741
 from matplotlib import pyplot as plt
 import torch
 import torchvision.models as models
@@ -10,6 +11,7 @@ import h5py
 import numpy as np
 import time
 import os
+# from tensorboardX import
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR  # 导入余弦退火调度器
 
@@ -107,8 +109,8 @@ if __name__ == '__main__':
     valid_dataset = Subset(SOS_dataset, valid_indices)
     test_dataset = Subset(SOS_dataset, test_indices)
 
-    train_loader = DataLoader(train_dataset, batch_size=8, pin_memory=False, shuffle=True, num_workers=4)
-    valid_loader = DataLoader(valid_dataset, batch_size=8, pin_memory=False, shuffle=True, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=16, pin_memory=False, shuffle=True, num_workers=4)
+    valid_loader = DataLoader(valid_dataset, batch_size=16, pin_memory=False, shuffle=True, num_workers=4)
 
   
     # pretrained_resnet50 = models.resnet50(pretrained=True)
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     )
    
 
-    num_epochs = 50# 设置总的训练轮数
+    num_epochs = 500# 设置总的训练轮数
     total_train_step = 0
     loss_total = 0  # 计算每一个epoch对应的loss
     # === 新增：初始化损失记录 ===
@@ -256,6 +258,8 @@ if __name__ == '__main__':
         # === 修改：仅保存验证集上损失最小的模型 ===
         if valid_loss < min_valid_loss:
             min_valid_loss = valid_loss
+            best_epoch = epoch + 1  # 记录最佳epoch（从1开始计数）
+            best_valid_loss = valid_loss  # 记录最佳验证损失
             # torch.save(model.state_dict(), os.path.join(model_dir, "step2_best_model.pth"))
             # 如果你想保存更多信息，也可以使用下面的代码
             torch.save({
@@ -267,3 +271,5 @@ if __name__ == '__main__':
             torch.cuda.empty_cache()
 
     print("执行时间：", time.time() - start_time, "秒")
+    print(f"最佳模型出现在第 {best_epoch} 轮，验证损失为 {best_valid_loss:.4f}")
+   
